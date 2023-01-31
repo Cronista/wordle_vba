@@ -6,7 +6,7 @@ It's more akin to Termo at term.ooo, the portuguese version, since it is also in
 
 Some of the .txt files are sketches and models I used. 
 The main files are:
-  "lista_palavras.xlsx". The final word list after processing
+  "lista_palavras.xlsx". The final word list after processing.
   "nomes-registados-2017.csv". List used to remove names from the main list using power query.
   "ref". References.
   "OBJ". A crude roadmap and objectives list. The "ç" is completed and " * " is not implemented.
