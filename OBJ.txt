@@ -1,0 +1,12 @@
+-verificar se repete ç
+-verificar se a palavra está na lista ç
+-remover siglas da lista ç
+-reconhecer acentos ç
+-mudar cor do amarelo ç
+-fazer teclado de letras usadas ç
+-perfil individual *
+-modo hard *
+-transformar em funções *
+-deixar ver o resultado final ç
+-bloquear planilha e transformar em sistema ç
+

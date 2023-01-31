@@ -1,0 +1,5 @@
+=SEERRO(LOCALIZAR("-";SE(NÚM.CARACT([@Column1]) <> 5;" ";[@Column1]);1);[@Column1])
+
+=SE(ÉNÚM(SEERRO(LOCALIZAR("-";SE(NÚM.CARACT([@Column1]) <> 5;" ";[@Column1]);1);[@Column1]));" ";[@Column1])
+
+=SE(ÉNÚM(SEERRO(LOCALIZAR("-";SE(NÚM.CARACT([@Column1]) <> 5;" ";[@Column1]);1);[@Column1]));" ";[@Column1])
