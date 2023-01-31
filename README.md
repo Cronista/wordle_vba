@@ -18,5 +18,5 @@ The main files are:
   
   "WORDLE". The sheet itself.
   
-  Before opening the workbook, I must remind you to enable macros on the workbook and make the file trustworthy, otherwise Excel won't let the code run.
+  Before opening the workbook, I must remind you to enable macros and make the file trustworthy, otherwise Excel won't let the code run.
   
