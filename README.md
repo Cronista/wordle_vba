@@ -1,5 +1,5 @@
 # wordle_vba
-wordle remake with excel's vba
+wordle remake with Excel's VBA.
 
 With the little spare time I had attending my intership, I've developed my first coding project: a wordle game remake.
 It's more akin to Termo at term.ooo, the portuguese version, since it is also in portuguese and I've used the same word list at https://github.com/fserb/pt-br repository.
@@ -17,4 +17,6 @@ The main files are:
   "OBJ". A crude roadmap and objectives list. The "ç" is completed and " * " is not implemented.
   
   "WORDLE". The sheet itself.
+  
+  Before opening the workbook, I must remind you to enable macros on the workbook and make the file trustworthy, otherwise Excel won't let the code run.
   
