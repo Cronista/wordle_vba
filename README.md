@@ -4,6 +4,8 @@ wordle remake with Excel's VBA.
 This is my first coding project: a wordle game remake.
 It's more akin to Termo at term.ooo, the portuguese version, since it is also in portuguese and I've used the same word list at https://github.com/fserb/pt-br repository.
 
+As much as it would make a better, more readable code, I could not use modules. I've been having some unknown compatibility issues with my Excel or Windows version. For properties that can only be accessed with modules, I had to do some improvising.
+
 Some of the .txt files are sketches and models I used. 
 
 The main files are:
