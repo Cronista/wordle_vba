@@ -1,0 +1,65 @@
+ 'verificar se é amarelo e repete
+        
+         For i = 1 To 5 Step 1
+                   
+             For i2 = 1 To 5 Step 1
+             
+                 'contar numero de letras iguais sorteio
+                 If outputSorteio.Cells(1, i).Value = outputSorteio.Cells(1, i2).Value Then
+            
+                    outputSorteio.Cells(1, i).Offset(5, 0).Value = outputSorteio.Cells(1, i).Offset(5, 0).Value + 1
+                       
+                 End If
+                 
+                 'contar numero de letras iguais palpite
+                 If outputPalpite.Cells(1, i).Value = outputPalpite.Cells(1, i2).Value Then
+            
+                    outputPalpite.Cells(1, i).Offset(5, 0).Value = outputPalpite.Cells(1, i).Offset(5, 0).Value + 1
+                       
+                 End If
+
+                 If outputSorteio.Cells(1, i).Value = outputPalpite.Cells(1, i2).Value And outputSorteio.Cells(1, i).Interior.Color <> RGB(204, 204, 0) And outputPalpite.Cells(1, i2).Interior.Color <> RGB(204, 204, 0) Then
+            
+                    outputPalpite.Cells(1, i2).Interior.Color = RGB(204, 204, 0)
+                    outputSorteio.Cells(1, i).Interior.Color = RGB(204, 204, 0)
+                    
+                    Call teclado((i2)) 'duplo parênteses para forçar a função a aceitar o tipo de var do i2
+                    
+                End If
+                
+            Next
+            
+        Next
+        
+        'verificar se é verde
+        
+        For i = 1 To 5 Step 1
+    
+            If outputSorteio.Cells(1, i).Value = outputPalpite.Cells(1, i).Value Then
+            
+                outputPalpite.Cells(1, i).Interior.Color = RGB(0, 255, 0)
+                outputSorteio.Cells(1, i).Interior.Color = RGB(0, 255, 0)
+                
+                Call teclado((i))
+            
+            End If
+            
+            Call tecladoPreto((i))
+                        
+        Next
+
+        ' v verificar se tem amarela indevida e remove-la v
+        For iVeriAm = 1 To 5 Step 1
+        
+            For iVeriAm2 = 1 To 5 Step 1
+                
+                If outputPalpite.Cells(1, iVeriAm).Value = outputSorteio.Cells(1, iVeriAm2).Value And outputPalpite.Cells(1, iVeriAm).Interior.Color <> outputSorteio.Cells(1, iVeriAm2).Interior.Color And outputPalpite.Cells(1, iVeriAm).Interior.Color <> RGB(0, 255, 0) And outputSorteio.Cells(1, iVeriAm2).Offset(5, 0).Value < outputPalpite.Cells(1, iVeriAm).Offset(5, 0).Value Then
+        
+                    outputPalpite.Cells(1, iVeriAm).Interior.Color = RGB(0, 0, 0)
+                               
+                End If
+                
+            Next
+        
+        Next
+        ' ^ verificar se tem amarela indevida e remove-la ^
