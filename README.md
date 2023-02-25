@@ -20,5 +20,7 @@ The main files are:
   
   "WORDLE". The sheet itself.
   
+  "vba_raw". The main vba code inside "Planilha4(jogo)" sheet.
+  
   Before opening the workbook, I must remind you to enable macros and make the file trustworthy, otherwise Excel won't let the code run.
   
