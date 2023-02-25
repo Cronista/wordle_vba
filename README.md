@@ -22,5 +22,7 @@ The main files are:
   
   "vba_raw". The main vba code inside "Planilha4(jogo)" sheet.
   
+  "vba_core_raw". The main color checking logic.
+  
   Before opening the workbook, I must remind you to enable macros and make the file trustworthy, otherwise Excel won't let the code run.
   
