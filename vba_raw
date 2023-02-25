@@ -1,0 +1,694 @@
+Sub ENTER_Click()
+
+    Application.ScreenUpdating = False
+    
+    Worksheets("dici").Visible = True
+    Worksheets("lista_semAcento_maisc.").Visible = True
+
+    Dim wb As Workbook
+    Dim ws, wsD, semAcento, wsheet As Worksheet
+    Dim lin, winCond, pSort As Integer
+    Dim plvrFim, palpite, sorteio As String
+    Dim outputPalpite, outputSorteio, palpiteRang As Range
+    
+    Set wb = ThisWorkbook
+    Set ws = ThisWorkbook.Worksheets("jogo")
+    Set wsD = ThisWorkbook.Worksheets("dici")
+    Set semAcento = ThisWorkbook.Worksheets("lista_semAcento_maisc.")
+    Set outputPalpite = wsD.Range("V1:Z1")
+    Set outputSorteio = wsD.Range("Q1:U1")
+    
+    'desbloquear planilhaS
+        
+    ActiveWorkbook.Worksheets("jogo").Unprotect "palavra!"
+    ActiveWorkbook.Worksheets("dici").Unprotect "palavra!"
+    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Unprotect "palavra!"
+    
+    plvrFim = wsD.Range("H3").Value
+    
+    If wsD.Range("A1") = True Then 'forçar recomeço pelo reset
+    
+        MsgBox "Recomece no botão RESET", vbOKOnly, "Fim de Jogo"
+                
+        For Each wsheet In ActiveWorkbook.Worksheets 'bloquear planilhaS
+    
+        wsheet.Protect "palavra!"
+    
+        Next wsheet
+        
+        Exit Sub
+
+    End If
+    
+    wsD.Range("A1") = False
+    
+    'verificar se tem caracteres especiais mais utilizados 'removido por redundância desnecessára
+'    ws.Select
+'    ws.Range("I10").Select
+'
+'    For i = 1 To 5 Step 1
+'
+'        For i2 = 11 To 18 Step 1
+'
+'            If ActiveCell.Value = ws.Range("H" & i2) Then
+'
+'                MsgBox "Apenas letras", vbOKOnly, "Atenção"
+'
+'                For Each wsheet In ActiveWorkbook.Worksheets 'bloquear planilhaS
+'
+'                wsheet.Protect "palavra!"
+'
+'                Next wsheet
+'
+'                Exit Sub
+'
+'            End If
+'
+'        Next
+'
+'        ws.Range("I10").Offset(0, i).Select
+'
+'    Next
+    
+    ws.Range("I10").Select 'verificar se é palavra com cinco letras
+    For i = 1 To 5 Step 1
+    
+        If ActiveCell.Value = ws.Range("H10") Then
+        
+            MsgBox "Apenas palavras com 5 letras", vbOKOnly, "Atenção"
+                    
+            For Each wsheet In ActiveWorkbook.Worksheets 'bloquear planilhaS
+    
+            wsheet.Protect "palavra!"
+    
+            Next wsheet
+            
+            Exit Sub
+        
+        End If
+        
+        ws.Range("I10").Offset(0, i).Select
+    
+    Next
+    
+    ws.Range("I10").Select 'transformar o palpite em maiúscula
+    For i = 1 To 5 Step 1
+    
+        Selection = UCase(Selection)
+        
+        ws.Range("I10").Offset(0, i).Select
+    
+    Next
+    
+    'retirar as acentuções do palpite e atribuir à uma range
+        
+    palpite = ws.Range("V6").Value
+    palpite = PadraoFunc(palpite)
+    ws.Range("V7").Value = palpite
+    Call colarSemAcento
+    
+    'preenchimento do outputPalpite para verificar se repete amarelo
+    ws.Range("I10:M10").Copy
+    wsD.Range("V1:Z1").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+            :=False, Transpose:=False
+        
+    'verificar se a palavra pertence ao pool
+    For i = 7 To 7008 Step 1
+        
+        If ws.Range("V7").Value = semAcento.Range("A" & i).Value Then
+        
+            pSort = i 'gravar posição da palavra que pertence ao pool
+        
+            Exit For
+            
+        ElseIf i = 7008 Then
+            
+            MsgBox "Palavra inválida", vbOKOnly
+            
+                'bloquear planilhaS
+                ActiveWorkbook.Worksheets("jogo").Protect "palavra!"
+                ActiveWorkbook.Worksheets("dici").Protect "palavra!"
+                ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Protect "palavra!"
+            
+            Exit Sub
+        
+        End If
+        
+    Next
+        
+        'verificar se é amarelo e repete
+        
+         For i = 1 To 5 Step 1
+                   
+             For i2 = 1 To 5 Step 1
+             
+                 'contar numero de letras iguais sorteio
+                 If outputSorteio.Cells(1, i).Value = outputSorteio.Cells(1, i2).Value Then
+            
+                    outputSorteio.Cells(1, i).Offset(5, 0).Value = outputSorteio.Cells(1, i).Offset(5, 0).Value + 1
+                       
+                 End If
+                 
+                 'contar numero de letras iguais palpite
+                 If outputPalpite.Cells(1, i).Value = outputPalpite.Cells(1, i2).Value Then
+            
+                    outputPalpite.Cells(1, i).Offset(5, 0).Value = outputPalpite.Cells(1, i).Offset(5, 0).Value + 1
+                       
+                 End If
+
+                 If outputSorteio.Cells(1, i).Value = outputPalpite.Cells(1, i2).Value And outputSorteio.Cells(1, i).Interior.Color <> RGB(204, 204, 0) And outputPalpite.Cells(1, i2).Interior.Color <> RGB(204, 204, 0) Then
+            
+                    outputPalpite.Cells(1, i2).Interior.Color = RGB(204, 204, 0)
+                    outputSorteio.Cells(1, i).Interior.Color = RGB(204, 204, 0)
+                    
+                    Call teclado((i2)) 'duplo parênteses para forçar a função a aceitar o tipo de var do i2
+                    
+                End If
+                
+            Next
+            
+        Next
+        
+        'verificar se é verde
+        
+        For i = 1 To 5 Step 1
+    
+            If outputSorteio.Cells(1, i).Value = outputPalpite.Cells(1, i).Value Then
+            
+                outputPalpite.Cells(1, i).Interior.Color = RGB(0, 255, 0)
+                outputSorteio.Cells(1, i).Interior.Color = RGB(0, 255, 0)
+                
+                Call teclado((i))
+            
+            End If
+            
+            Call tecladoPreto((i))
+                        
+        Next
+
+        ' v verificar se tem amarela indevida e remove-la v
+        For iVeriAm = 1 To 5 Step 1
+        
+            For iVeriAm2 = 1 To 5 Step 1
+                
+                If outputPalpite.Cells(1, iVeriAm).Value = outputSorteio.Cells(1, iVeriAm2).Value And outputPalpite.Cells(1, iVeriAm).Interior.Color <> outputSorteio.Cells(1, iVeriAm2).Interior.Color And outputPalpite.Cells(1, iVeriAm).Interior.Color <> RGB(0, 255, 0) And outputSorteio.Cells(1, iVeriAm2).Offset(5, 0).Value < outputPalpite.Cells(1, iVeriAm).Offset(5, 0).Value Then
+        
+                    outputPalpite.Cells(1, iVeriAm).Interior.Color = RGB(0, 0, 0)
+                               
+                End If
+                
+            Next
+        
+        Next
+        ' ^ verificar se tem amarela indevida e remove-la ^
+        
+        'resetar contador de numero de linha palpite e sorteio
+        Sheets("dici").Range("Q6:Z6").ClearContents
+        
+        'resetar a cor range outputSorteio
+        Sheets("dici").Range("Q1:U1").Interior.Color = RGB(0, 0, 0)
+        
+        'verificar onde atualizar a lista de palpites
+        lin = 0
+        For i = 21 To 26 Step 1
+                
+            If ws.Range("I" & i) = "" Then
+                                      
+                Exit For
+                
+            End If
+            
+            lin = lin + 1
+            winPos = winPos + 1
+                
+        Next
+        
+      'atualizar a lista de palpites
+      
+      Worksheets("jogo").Range("I21:M26").Locked = False
+      Worksheets("dici").Range("V1:Z1").Copy
+      ws.Range("I21:M21").Offset(lin, 0).Select
+      ActiveSheet.Paste
+      Range("I10:M10").Select
+      Application.CutCopyMode = False
+      Selection.ClearContents
+      
+      'resetar a cor da range do outputPalpite
+      Sheets("dici").Range("V1:Z1").Interior.Color = RGB(0, 0, 0)
+      
+'         pega a tentativa já verificada e sobrepõe sua posição na lista de palpite para adicionar acentos
+
+    For i = 1 To 5 Step 1
+
+      wsD.Range("P" & i).Value = Mid(UCase(wsD.Range("A" & pSort).Value), i, 1)
+
+    Next
+
+    ws.Range("I21:M21").Offset(lin, 0) = wsD.Range("Q2:U2").Value
+            
+    'verificar se ganhou
+    winCond = 0
+    ws.Range("I" & 21 + winPos).Select
+    
+    For i = 1 To 5 Step 1
+
+        If Selection.Interior.Color = RGB(0, 255, 0) Then
+
+            winCond = winCond + 1 'contador para verificar a pontuação final
+
+        End If
+
+        Selection.Offset(0, 1).Select
+        
+    Next
+            
+        If winCond = 5 And winPos = 0 Then
+            
+            MsgBox "Inacreditável...", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+            
+        ElseIf winCond = 5 And winPos = 1 Then
+        
+            MsgBox "Incrível!", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+            
+        ElseIf winCond = 5 And winPos = 2 Then
+        
+            MsgBox "Sensacional!", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+            
+        ElseIf winCond = 5 And winPos = 3 Then
+        
+            MsgBox "Muito bom!", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+            
+        ElseIf winCond = 5 And winPos = 4 Then
+        
+            MsgBox "Bom", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+        
+        ElseIf winCond = 5 And winPos = 5 Then
+        
+            MsgBox "Ufa!", vbOKOnly, "ACERTOU"
+            wsD.Range("A1") = True
+            
+        End If
+        
+        'verificar se perdeu
+        If winCond <> 5 And winPos = 5 Then
+        
+            MsgBox plvrFim, vbOKOnly, "PERDEU"
+            wsD.Range("A1") = True
+        
+        End If
+        
+    Worksheets("jogo").Range("I21:M26").Locked = True 'travar a lista de palpites novamente. A cada atualização ela destrava
+    
+    'bloquear planilhaS
+    
+    ActiveWorkbook.Worksheets("jogo").Protect "palavra!"
+    ActiveWorkbook.Worksheets("dici").Protect "palavra!"
+    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Protect "palavra!"
+    
+    Worksheets("dici").Visible = False
+    Worksheets("lista_semAcento_maisc.").Visible = False
+    
+    Application.ScreenUpdating = True
+    
+End Sub
+
+
+'Private Sub limpar_BT_Click() 'removido por qualidade de vida
+'
+'Application.ScreenUpdating = False
+'
+'    Worksheets("dici").Visible = True
+'    Worksheets("lista_semAcento_maisc.").Visible = True
+'
+'    'desbloquear planilhaS
+'    ActiveWorkbook.Worksheets("jogo").Unprotect "palavra!"
+'    ActiveWorkbook.Worksheets("dici").Unprotect "palavra!"
+'    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Unprotect "palavra!"
+'
+'Range("I10:M10").ClearContents
+'
+'ActiveSheet.Protect Password:="palavra!"
+'
+'    'bloquear planilhaS
+'    ActiveWorkbook.Worksheets("jogo").Protect "palavra!"
+'    ActiveWorkbook.Worksheets("dici").Protect "palavra!"
+'    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Protect "palavra!"
+'
+'    Worksheets("dici").Visible = False
+'    Worksheets("lista_semAcento_maisc.").Visible = False
+'
+'Application.ScreenUpdating = True
+'
+'End Sub
+
+
+Sub resetBT_Click()
+
+    Dim resetOk
+     
+    resetOk = MsgBox("Deseja realmente resetar?", vbYesNo, "Reset")
+    
+        If resetOk = vbNo Then
+            
+            Exit Sub
+            
+        End If
+    
+    Application.ScreenUpdating = False
+    
+    Worksheets("dici").Visible = True
+    Worksheets("lista_semAcento_maisc.").Visible = True
+    
+    'desbloquear planilhaS
+    ActiveWorkbook.Worksheets("jogo").Unprotect "palavra!"
+    ActiveWorkbook.Worksheets("dici").Unprotect "palavra!"
+    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Unprotect "palavra!"
+    
+    Dim wb As Workbook
+    Dim ws, wsD As Worksheet
+    
+    Set ws = ThisWorkbook.Worksheets("jogo")
+    Set wsD = ThisWorkbook.Worksheets("dici")
+    Set wb = ThisWorkbook
+    
+    wsD.Range("A1") = False
+    winCond = 0
+    winPos = 0
+    
+    'resetar sorteio
+    Run "Planilha5.resetSorteio_Click"
+
+    Range("I21:M26").Select 'resetar a lista de palpites
+            Application.CutCopyMode = False
+            Selection.ClearContents
+            With Selection.Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .ThemeColor = xlThemeColorLight1
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+            
+    Worksheets("jogo").Range("I21:M26").Locked = True
+
+    'resetar a cor da range outputSorteio
+    Sheets("dici").Range("Q1:U1").Interior.Color = RGB(0, 0, 0)
+    
+    'resetar o valor da range do outputSorteio e plrFim
+    wsD.Range("Q1:U1") = wsD.Range("F2:J2").Value
+    wsD.Range("H3") = wsD.Range("Q1") & wsD.Range("R1") & wsD.Range("S1") & wsD.Range("T1") & wsD.Range("U1")
+    
+    'resetar a cor da range outputPalpite
+    Sheets("dici").Range("V1:Z1").Interior.Color = RGB(0, 0, 0)
+    
+    'resetar o teclado
+    ws.Range("AC8:AL8").Interior.Color = RGB(166, 166, 166)
+    ws.Range("AD9:AL9").Interior.Color = RGB(166, 166, 166)
+    ws.Range("AE10:AK10").Interior.Color = RGB(166, 166, 166)
+    
+    Worksheets("jogo").Range("I21:M26").Locked = True
+    
+    'bloquear planilhaS
+    ActiveWorkbook.Worksheets("jogo").Protect "palavra!"
+    ActiveWorkbook.Worksheets("dici").Protect "palavra!"
+    ActiveWorkbook.Worksheets("lista_semAcento_maisc.").Protect "palavra!"
+    
+    Worksheets("dici").Visible = False
+    Worksheets("lista_semAcento_maisc.").Visible = False
+    
+    Application.ScreenUpdating = True
+
+End Sub
+
+Function Padrao() As String
+
+'usado uma vez para converter toda a lista de palavras em sem acento
+
+Dim wb As Workbook
+Dim ws, wsD As Worksheet
+Dim strPool As String
+Dim objPool As Range
+Set wb = ThisWorkbook
+Set ws = ThisWorkbook.Worksheets("jogo")
+Set wsD = ThisWorkbook.Worksheets("dici")
+Const sFm As String = "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðñòóôõöùúûüýÿ"
+Const sTo As String = "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUYaaaaaaceeeeiiiidnooooouuuuyy"
+    
+    For j = 7 To 19287 Step 1
+    
+        wsD.Range("B5").Value = j
+        
+        Set objPool = wsD.Range("B" & j)
+    
+        For i = 1 To Len(sFm)
+                
+            objPool.Replace Mid(sFm, i, 1), Mid(sTo, i, 1), LookAt:=xlPart, MatchCase:=True
+            
+        Next
+        
+        wsD.Range("B" & j).Value = objPool
+        
+    Next
+
+End Function
+
+Function PadraoFunc(ByVal palpiteComAcento As String) As String
+
+    Application.ScreenUpdating = False
+    'ActiveSheet.Unprotect Password:="palavra!"
+
+Const sFm As String = "ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖÙÚÛÜÝ"
+Const sTo As String = "SZszYAAAAAACEEEEIIIIDNOOOOOUUUUY"
+    
+    For i = 1 To Len(sFm)
+        
+        palpiteComAcento = Replace(palpiteComAcento, Mid(sFm, i, 1), Mid(sTo, i, 1))
+        
+    Next
+    
+    PadraoFunc = palpiteComAcento
+
+    Exit Function
+    
+    Application.ScreenUpdating = False
+    'ActiveSheet.Protect Password:="palavra!"
+
+End Function
+
+Sub colarSemAcento()
+
+    Application.ScreenUpdating = False
+    'ActiveSheet.Unprotect Password:="palavra!"
+    
+    Range("W7:AA7").Select
+    Selection.Copy
+    Range("I10:M10").Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+        
+    Application.ScreenUpdating = False
+    'ActiveSheet.Protect Password:="palavra!"
+    
+End Sub
+
+Function teclado(ByVal indexPalpite As Integer)
+
+    Application.ScreenUpdating = False
+    'ActiveSheet.Unprotect Password:="palavra!"
+
+    Dim wb As Workbook
+    Dim ws, wsD As Worksheet
+    Dim tecladoRange As Range
+    Set wb = ThisWorkbook
+    Set ws = ThisWorkbook.Worksheets("jogo")
+    Set wsD = ThisWorkbook.Worksheets("dici")
+    Set tecladoRange = ws.Range("AC8:AM10")
+    
+    For iTecladoRow = 1 To 3 Step 1
+    
+        For iTecladoCol = 1 To 10 Step 1
+        
+            If wsD.Range("V1:Z1").Cells(1, indexPalpite) = tecladoRange.Cells(iTecladoRow, iTecladoCol) And wsD.Range("V1:Z1").Cells(1, indexPalpite).Interior.Color <> RGB(0, 0, 0) And tecladoRange.Cells(iTecladoRow, iTecladoCol).Interior.Color <> RGB(0, 255, 0) Then
+            
+                tecladoRange.Cells(iTecladoRow, iTecladoCol).Interior.Color = wsD.Range("V1:Z1").Cells(1, indexPalpite).Interior.Color
+                
+            End If
+    
+        Next
+        
+    Next
+    
+    Application.ScreenUpdating = False
+    'ActiveSheet.Protect Password:="palavra!"
+
+End Function
+
+Function tecladoPreto(ByVal indexPalpite As Integer)
+
+    Application.ScreenUpdating = False
+    'ActiveSheet.Unprotect Password:="palavra!"
+    
+    Dim wb As Workbook
+    Dim ws, wsD As Worksheet
+    Dim tecladoRange As Range
+    Set wb = ThisWorkbook
+    Set ws = ThisWorkbook.Worksheets("jogo")
+    Set wsD = ThisWorkbook.Worksheets("dici")
+    Set tecladoRange = ws.Range("AC8:AM10")
+    
+    For iTecladoRow = 1 To 3 Step 1
+    
+        For iTecladoCol = 1 To 10 Step 1
+            
+            If wsD.Range("V1:Z1").Cells(1, indexPalpite) = tecladoRange.Cells(iTecladoRow, iTecladoCol) And tecladoRange.Cells(iTecladoRow, iTecladoCol).Interior.Color = RGB(166, 166, 166) Then
+                
+                tecladoRange.Cells(iTecladoRow, iTecladoCol).Interior.Color = RGB(0, 0, 0)
+                
+            End If
+    
+        Next
+        
+    Next
+    
+    Application.ScreenUpdating = False
+    'ActiveSheet.Protect Password:="palavra!"
+
+End Function
+
+Sub sistemaBT_Click()
+
+    Application.ScreenUpdating = False
+    
+    'Worksheets("cadastro").Visible = True
+    Worksheets("jogo").Visible = False
+    Worksheets("dici").Visible = False
+    Worksheets("lista_semAcento_maisc.").Visible = False
+    'Worksheets("dados_patrimonio").Visible = True
+
+    'Reexibe os menus
+    Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",True)"
+    
+    'Reexibir a barra de fÃ³rmulas
+    Application.DisplayFormulaBar = True
+    
+    'Reexibir a barra de status, disposta ao final da planilha
+    Application.DisplayStatusBar = True
+    
+    'Reexibir o cabeÃ§alho da Pasta de trabalho
+    ActiveWindow.DisplayHeadings = True
+    
+    'Retornar o nome do Excel
+    'Application.Caption = ""
+    
+   With ActiveWindow
+        'Reexibir barra horizontal
+        '.DisplayHorizontalScrollBar = True
+        
+        'Reexibir barra vertical
+       ' .DisplayVerticalScrollBar = True
+        
+        'Reexibir guias das planilhas
+        .DisplayWorkbookTabs = True
+        
+        'Reexibir os tÃ­tulos de linha e coluna
+       ' .DisplayHeadings = True
+        
+        'Reexibir valores zero na planilha
+       ' .DisplayZeros = True
+        
+        'Reexibir as linhas de grade da planilha
+        '.DisplayGridlines = True
+        
+    End With
+    
+    Sheets("cadastro").Select
+     
+    Worksheets("jogo").Visible = False
+    Worksheets("dici").Visible = False
+    Worksheets("lista_semAcento_maisc.").Visible = False
+    
+    Application.ScreenUpdating = True
+
+End Sub
+
+
+Sub sistemaBT_orfao()
+
+Application.ScreenUpdating = False
+    
+    Worksheets("jogo").Visible = True
+    Worksheets("dici").Visible = True
+    Worksheets("lista_semAcento_maisc.").Visible = True
+    'Worksheets("cadastro").Visible = True
+    'Worksheets("dados_patrimonio").Visible = True
+
+    'Reexibe os menus
+    Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"",True)"
+    
+    'Reexibir a barra de fÃ³rmulas
+    Application.DisplayFormulaBar = True
+    
+    'Reexibir a barra de status, disposta ao final da planilha
+    Application.DisplayStatusBar = True
+    
+    'Reexibir o cabeÃ§alho da Pasta de trabalho
+    ActiveWindow.DisplayHeadings = True
+    
+    'Retornar o nome do Excel
+    'Application.Caption = ""
+    
+   With ActiveWindow
+        'Reexibir barra horizontal
+        '.DisplayHorizontalScrollBar = True
+        
+        'Reexibir barra vertical
+       ' .DisplayVerticalScrollBar = True
+        
+        'Reexibir guias das planilhas
+        .DisplayWorkbookTabs = True
+        
+        'Reexibir os tÃ­tulos de linha e coluna
+       ' .DisplayHeadings = True
+        
+        'Reexibir valores zero na planilha
+       ' .DisplayZeros = True
+        
+        'Reexibir as linhas de grade da planilha
+        '.DisplayGridlines = True
+        
+    End With
+    
+    'Sheets("cadastro").Select
+     
+'    Worksheets("jogo").Visible = False
+'    Worksheets("dici").Visible = False
+'    Worksheets("lista_semAcento_maisc.").Visible = False
+    
+    Application.ScreenUpdating = True
+
+End Sub
+
+
+
+Private Sub Worksheet_SelectionChange(ByVal Target As Range) 'apertar enter para jogar o palpite
+
+    If ActiveSheet.Name = "jogo" Then
+
+        If Target.Row = 11 And (Target.Column = 13) Then
+
+            Application.EnableEvents = False
+            Call ENTER_Click
+            Application.EnableEvents = True
+
+            Exit Sub
+
+        End If
+
+    End If
+
+End Sub
