@@ -17,7 +17,8 @@
                     outputPalpite.Cells(1, i).Offset(5, 0).Value = outputPalpite.Cells(1, i).Offset(5, 0).Value + 1
                        
                  End If
-
+                 
+                 'colore de amarelo letras iguais entre palpite e sorteio que não foram ainda avaliadas como iguais
                  If outputSorteio.Cells(1, i).Value = outputPalpite.Cells(1, i2).Value And outputSorteio.Cells(1, i).Interior.Color <> RGB(204, 204, 0) And outputPalpite.Cells(1, i2).Interior.Color <> RGB(204, 204, 0) Then
             
                     outputPalpite.Cells(1, i2).Interior.Color = RGB(204, 204, 0)
