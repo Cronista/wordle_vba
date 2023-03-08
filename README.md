@@ -10,7 +10,9 @@ Some of the .txt files are sketches and models I used.
 
 The main files are:
 
-  "lista_palavras_semAcent_maisc.txt". The final word list after processing. All caps, no accents, no names.
+  "lista_palavras_semAcent_maisc.txt". One of the word lists after processing. All caps, no accents, no names.
+  
+  "lista_palavras". The second word list. Used to revert back the accents, once removed for word/letter checking.
   
   "nomes-registados-2017.csv". List used to remove names from the main list using power query.
   
